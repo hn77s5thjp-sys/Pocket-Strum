@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pocket Strum — the '80s electronic autoharp on your iPhone</title>
+<meta name="description" content="Hold a chord, strum the glass, every note lands. The cult 1981 electronic autoharp reborn for iPhone — four synth voices, five rhythms, two looks. Pay once, no ads.">
+<meta property="og:title" content="Pocket Strum">
+<meta property="og:description" content="The '80s electronic autoharp, reborn on your iPhone. Try the strumplate right on this page.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#EBE6DA; --panel:#F4F0E6; --panel-deep:#E3DDCC;
+    --ink:#2A2620; --ink-soft:#6B6354;
+    --red:#C43729; --red-deep:#9E2A1E;
+    --charcoal:#1B1B1D; --charcoal-2:#242426;
+    --led:#FF4530; --lcd:#F3EFE2;
+    --radius:12px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--cream); color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,sans-serif;
+    font-size:17px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--red)}
+  a:focus-visible,button:focus-visible{outline:3px solid var(--red); outline-offset:2px}
+  .wrap{max-width:960px; margin:0 auto; padding:0 20px}
+
+  /* ---------- silkscreen bits ---------- */
+  .silk{
+    font-size:11px; font-weight:600; letter-spacing:.22em;
+    text-transform:uppercase; color:var(--ink-soft);
+  }
+  .rule2{display:flex; flex-direction:column; gap:3px; flex:1; min-width:24px}
+  .rule2 i{display:block; height:2px; background:var(--red)}
+  .rule2 i+i{height:1px; opacity:.7}
+  .sechead{display:flex; align-items:center; gap:14px; margin:64px 0 22px}
+
+  /* ---------- badge ---------- */
+  .badge{display:inline-flex; align-items:center; gap:9px; text-decoration:none}
+  .badge .lines{display:flex; flex-direction:column; align-items:flex-end; gap:3px}
+  .badge .lines i{display:block; height:3px; background:var(--red)}
+  .badge .lines i:nth-child(1){width:30px}
+  .badge .lines i:nth-child(2){width:22px}
+  .badge .lines i:nth-child(3){width:14px}
+  .badge b{
+    font-family:"Archivo Black",sans-serif; font-weight:400;
+    font-style:italic; font-size:22px; letter-spacing:.01em; color:var(--ink);
+    white-space:nowrap;
+  }
+  .badge b span{color:var(--red)}
+
+  /* ---------- header / hero ---------- */
+  header.top{display:flex; justify-content:space-between; align-items:center; padding:26px 0 8px}
+  .hero{padding:34px 0 10px}
+  .hero h1{
+    font-family:"Archivo Black",sans-serif; font-weight:400;
+    font-size:clamp(34px,6vw,58px); line-height:1.04; letter-spacing:-.01em;
+    max-width:15ch;
+  }
+  .hero h1 em{font-style:normal; color:var(--red)}
+  .hero p.lead{margin:18px 0 26px; font-size:19px; max-width:52ch; color:var(--ink-soft)}
+  .cta-row{display:flex; align-items:center; gap:18px; flex-wrap:wrap}
+  .appstore-btn{
+    display:inline-flex; flex-direction:column; justify-content:center;
+    background:var(--charcoal); color:#fff; text-decoration:none;
+    border-radius:10px; padding:9px 20px 10px; line-height:1.15;
+    border:1px solid #000; box-shadow:0 2px 0 rgba(0,0,0,.35);
+  }
+  .appstore-btn small{font-size:10px; letter-spacing:.08em; text-transform:uppercase; opacity:.85}
+  .appstore-btn span{font-size:19px; font-weight:600}
+  .appstore-btn:hover{transform:translateY(-1px)}
+  .price-tag{font-family:"IBM Plex Mono",monospace; font-size:14px; color:var(--ink-soft)}
+  .price-tag b{color:var(--red); font-weight:500}
+
+  /* ---------- panels ---------- */
+  .panel{
+    background:var(--panel); border-radius:var(--radius);
+    border:1px solid rgba(0,0,0,.16);
+    box-shadow:inset 0 1.5px 0 rgba(255,255,255,.9), 0 2px 4px rgba(0,0,0,.08);
+    padding:22px;
+  }
+
+  /* ---------- the playable plate ---------- */
+  .plate-frame{
+    background:var(--charcoal); border-radius:16px; padding:14px;
+    border:1px solid #000; box-shadow:0 4px 10px rgba(0,0,0,.22);
+    margin:34px 0 10px;
+  }
+  .plate-head{display:flex; justify-content:space-between; align-items:center; margin:0 4px 12px}
+  .plate-head .silk{color:#B9B2A2}
+  .plate-head .led{width:8px; height:8px; border-radius:50%; background:#5A1710; border:1px solid #000; transition:background .12s, box-shadow .12s}
+  .plate-head .led.on{background:var(--led); box-shadow:0 0 8px var(--led)}
+  .plate{display:flex; gap:5px; height:190px; touch-action:none}
+  .bar{
+    flex:1; border:0; border-radius:6px; cursor:pointer; position:relative;
+    background:
+      repeating-linear-gradient(to bottom, rgba(0,0,0,.16) 0 1px, transparent 1px 4px),
+      linear-gradient(to bottom, var(--c1), var(--c2));
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.3), 0 1px 2px rgba(0,0,0,.4);
+    transition:filter .25s ease, box-shadow .25s ease;
+  }
+  .bar::after{
+    content:attr(data-note); position:absolute; left:50%; bottom:6px;
+    transform:translateX(-50%);
+    font-family:"IBM Plex Sans",sans-serif; font-size:10px; font-weight:700;
+    color:#fff; background:rgba(20,20,22,.92); border-radius:4px; padding:1px 5px;
+  }
+  .bar.hit{filter:brightness(1.7) saturate(.7); box-shadow:0 0 14px rgba(255,255,255,.55), inset 0 0 0 1px rgba(255,255,255,.6)}
+  @media (prefers-reduced-motion: reduce){
+    .bar{transition:none}
+    .appstore-btn:hover{transform:none}
+  }
+  .plate-hint{text-align:center; margin:10px 0 0; font-size:13px; color:var(--ink-soft)}
+
+  /* ---------- features ---------- */
+  .feat-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+  .feat h3{font-size:16px; font-weight:600; margin:10px 0 6px}
+  .feat p{font-size:14.5px; color:var(--ink-soft)}
+  .keycap{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:44px; height:32px; padding:0 10px; border-radius:6px;
+    background:linear-gradient(to bottom,#F7F4EC,#E1DBC9);
+    border:1px solid rgba(0,0,0,.3);
+    box-shadow:inset 0 1.5px 0 rgba(255,255,255,.85), 0 1.5px 0 rgba(0,0,0,.3);
+    font-weight:700; font-size:12px; letter-spacing:.06em;
+  }
+  .keycap.red{background:linear-gradient(to bottom,#D84C3C,#AA2819); color:#fff; border-color:rgba(0,0,0,.45)}
+
+  /* ---------- looks ---------- */
+  .looks{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  .shot{
+    background:var(--panel-deep); border-radius:var(--radius);
+    border:1px dashed rgba(0,0,0,.28); min-height:340px;
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+    position:relative;
+  }
+  .shot img{width:100%; height:auto; display:block}
+  .shot .ph{position:absolute; inset:0; display:flex; flex-direction:column; gap:6px; align-items:center; justify-content:center; text-align:center; padding:20px; color:var(--ink-soft); font-size:13px}
+  .shot.loaded{border-style:solid}
+  .shot.loaded .ph{display:none}
+  .look-label{display:flex; align-items:center; gap:8px; margin-top:10px}
+  .look-label .dot{width:8px; height:8px; border-radius:50%; background:var(--led); box-shadow:0 0 6px var(--led)}
+
+  /* ---------- specs strip ---------- */
+  .specs{
+    background:var(--charcoal); color:var(--lcd); border-radius:var(--radius);
+    border:1px solid #000; padding:20px 22px;
+    display:grid; grid-template-columns:repeat(4,1fr); gap:14px;
+    font-family:"IBM Plex Mono",monospace; font-size:13px;
+  }
+  .specs b{display:block; font-size:20px; font-weight:500; color:#fff}
+  .specs span{color:#A79; color:#B9B2A2; letter-spacing:.06em; font-size:10.5px; text-transform:uppercase}
+
+  /* ---------- footer ---------- */
+  footer{margin-top:70px; background:var(--charcoal); color:#C9C2B2}
+  footer .inner{max-width:960px; margin:0 auto; padding:34px 20px 40px; font-size:14px}
+  footer a{color:#fff}
+  footer .links{display:flex; gap:22px; flex-wrap:wrap; margin:14px 0 18px}
+  footer .fine{font-size:12px; color:#8F887A; max-width:70ch}
+
+  @media (max-width:760px){
+    .feat-grid{grid-template-columns:1fr}
+    .looks{grid-template-columns:1fr}
+    .specs{grid-template-columns:repeat(2,1fr)}
+    .plate{height:150px}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <span class="badge" aria-hidden="false">
+      <span class="lines" aria-hidden="true"><i></i><i></i><i></i></span>
+      <b>POCKET&nbsp;<span>STRUM</span></b>
+    </span>
+    <span class="silk">iPhone · iOS 17+</span>
+  </header>
+
+  <section class="hero">
+    <h1>Hold a chord. Strum the glass. <em>Every note lands.</em></h1>
+    <p class="lead">The beloved electronic autoharp of the early '80s — the
+    strum-anything machine heard on records by Gorillaz, David Bowie and
+    Brian Eno — reborn as a pocket instrument anyone can play in seconds.</p>
+    <div class="cta-row">
+      <!-- Replace this styled link with Apple's official badge before launch:
+           App Store Connect → your app → "View on App Store" for the URL, and
+           the official "Download on the App Store" badge artwork from Apple's
+           marketing resources page. -->
+      <a class="appstore-btn" href="#" id="store-link">
+        <small>Download on the</small><span>App Store</span>
+      </a>
+      <span class="price-tag"><b>$2.99</b> launch week · then $4.99 · pay once, own it</span>
+    </div>
+  </section>
+
+  <!-- ======== SIGNATURE: the playable plate ======== -->
+  <div class="plate-frame" id="try">
+    <div class="plate-head">
+      <span class="silk">SonicStrings — F7 · try it</span>
+      <span class="led" id="plate-led" aria-hidden="true"></span>
+    </div>
+    <div class="plate" id="plate" role="group" aria-label="Playable strumplate tuned to F7. Sweep across the bars or press Enter on a bar to pluck it.">
+      <!-- bars injected by script -->
+    </div>
+  </div>
+  <p class="plate-hint">This page actually plays — sweep across the strings. 🔊
+  The app sounds far richer; this is the postcard.</p>
+
+  <!-- ======== FEATURES ======== -->
+  <div class="sechead"><span class="silk">What's inside</span><span class="rule2"><i></i><i></i></span></div>
+  <div class="feat-grid">
+    <div class="panel feat">
+      <span class="keycap">F7</span><span class="keycap">Bbm</span><span class="keycap red">C</span>
+      <h3>108 chords, zero theory</h3>
+      <p>Twelve keys in circle-of-fifths order across Major, Minor and 7th
+      rows. Hold combinations — Maj+7, Min+7, all three — plus SUS4 and
+      ADD9 keys. The plate re-tunes to whatever you hold.</p>
+    </div>
+    <div class="panel feat">
+      <span class="keycap">OMNI</span><span class="keycap">HARP</span><span class="keycap">ORGAN</span>
+      <h3>A real synth, not samples</h3>
+      <p>Four voices from a real-time polyphonic engine — anti-aliased
+      oscillators, shimmering delay, hall reverb, vibrato — with velocity
+      from finger speed and a haptic tick on every string.</p>
+    </div>
+    <div class="panel feat">
+      <span class="keycap red">▶</span><span class="keycap">104</span><span class="keycap">▲▼</span>
+      <h3>A band in your pocket</h3>
+      <p>Five rhythms — Rock, Slow rock, Waltz, Bossa nova, Hip hop — with
+      a bass player that follows your chords, 60–180 BPM. Keeps playing in
+      the background so you can jam over Apple&nbsp;Music or Spotify.</p>
+    </div>
+  </div>
+
+  <!-- ======== TWO LOOKS ======== -->
+  <div class="sechead"><span class="silk">Two looks, one instrument</span><span class="rule2"><i></i><i></i></span></div>
+  <div class="looks">
+    <div>
+      <div class="shot" id="shot-classic">
+        <img src="shots/classic.png" alt="Pocket Strum in the Classic look: cream panel, red keys, rainbow strumplate" onload="this.parentElement.classList.add('loaded')">
+        <div class="ph"><strong>classic.png</strong><span>Drop your Classic-skin portrait screenshot into <code>shots/</code> (any size; it scales).</span></div>
+      </div>
+      <div class="look-label"><span class="dot"></span><span class="silk" style="color:var(--ink)">Classic — 1981 in your pocket</span></div>
+    </div>
+    <div>
+      <div class="shot" id="shot-modern">
+        <img src="shots/modern.png" alt="Pocket Strum in the Modern look: dark flat interface" onload="this.parentElement.classList.add('loaded')">
+        <div class="ph"><strong>modern.png</strong><span>Drop your Modern-skin portrait screenshot into <code>shots/</code>.</span></div>
+      </div>
+      <div class="look-label"><span class="dot" style="background:#4BD0A0; box-shadow:0 0 6px #4BD0A0"></span><span class="silk" style="color:var(--ink)">Modern — dark &amp; stage-friendly</span></div>
+    </div>
+  </div>
+
+  <!-- ======== SPECS ======== -->
+  <div class="sechead"><span class="silk">Fact sheet</span><span class="rule2"><i></i><i></i></span></div>
+  <div class="specs" role="list">
+    <div role="listitem"><b>108</b><span>chords</span></div>
+    <div role="listitem"><b>12</b><span>strings, multitouch</span></div>
+    <div role="listitem"><b>4 + 5</b><span>voices + rhythms</span></div>
+    <div role="listitem"><b>$4.99</b><span>once. no ads · no subs · no tracking</span></div>
+  </div>
+</div>
+
+<footer>
+  <div class="inner">
+    <span class="badge"><span class="lines" aria-hidden="true"><i style="background:var(--red)"></i><i style="background:var(--red)"></i><i style="background:var(--red)"></i></span>
+      <b style="color:#fff">POCKET&nbsp;<span>STRUM</span></b></span>
+    <div class="links">
+      <a href="support.html">Support</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="mailto:YOUR@EMAIL">Press &amp; contact</a>
+    </div>
+    <p class="fine">© 2026 YOUR NAME. Pocket Strum collects no data.
+    Inspired by the electronic autoharps of the early 1980s; not
+    affiliated with or endorsed by any hardware manufacturer.</p>
+  </div>
+</footer>
+
+<script>
+/* The playable plate: F7 across three octaves, two detuned saws through a
+   lowpass with exponential decay + a touch of feedback delay — a postcard
+   of the app's Omni voice. Audio starts only after a user gesture. */
+(function(){
+  const NOTES = [53,57,60,63,65,69,72,75,77,81,84,87]; // F7: F A C Eb x3
+  const NAMES = ["F","A","C","E\u266D","F","A","C","E\u266D","F","A","C","E\u266D"];
+  const plate = document.getElementById('plate');
+  const led = document.getElementById('plate-led');
+  let ctx = null, master = null, lastBar = -1, ledTimer = null;
+
+  // Build bars
+  NOTES.forEach((m,i)=>{
+    const b = document.createElement('button');
+    b.className = 'bar'; b.type = 'button';
+    b.dataset.note = NAMES[i]; b.dataset.index = i;
+    b.setAttribute('aria-label', 'Pluck string ' + (i+1) + ', note ' + NAMES[i]);
+    const hue = i/12*360;
+    b.style.setProperty('--c1', 'hsl('+hue+' 62% 52%)');
+    b.style.setProperty('--c2', 'hsl('+hue+' 68% 36%)');
+    b.addEventListener('keydown', e=>{
+      if(e.key==='Enter'||e.key===' '){ e.preventDefault(); pluck(i,.7); }
+    });
+    plate.appendChild(b);
+  });
+  const bars = [...plate.children];
+
+  function audio(){
+    if(ctx) { if(ctx.state==='suspended') ctx.resume(); return; }
+    const AC = window.AudioContext||window.webkitAudioContext;
+    ctx = new AC();
+    master = ctx.createGain(); master.gain.value = .5;
+    const delay = ctx.createDelay(1); delay.delayTime.value = .27;
+    const fb = ctx.createGain(); fb.gain.value = .3;
+    const wet = ctx.createGain(); wet.gain.value = .18;
+    const lp = ctx.createBiquadFilter(); lp.frequency.value = 2800;
+    master.connect(ctx.destination);
+    master.connect(delay); delay.connect(lp); lp.connect(fb); fb.connect(delay);
+    lp.connect(wet); wet.connect(ctx.destination);
+  }
+
+  function pluck(i, vel){
+    audio();
+    const t = ctx.currentTime;
+    const f = 440*Math.pow(2,(NOTES[i]-69)/12);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(.16*vel+.04, t+.005);
+    g.gain.exponentialRampToValueAtTime(.0001, t+1.6);
+    const flt = ctx.createBiquadFilter();
+    flt.type='lowpass'; flt.Q.value=.7;
+    flt.frequency.setValueAtTime(1200+4200*vel, t);
+    flt.frequency.exponentialRampToValueAtTime(500, t+1.2);
+    [ -6, 6 ].forEach(cents=>{
+      const o = ctx.createOscillator();
+      o.type='sawtooth'; o.frequency.value=f; o.detune.value=cents;
+      o.connect(flt); o.start(t); o.stop(t+1.7);
+    });
+    flt.connect(g); g.connect(master);
+    flash(i);
+  }
+
+  function flash(i){
+    const b = bars[i];
+    b.classList.remove('hit'); void b.offsetWidth; b.classList.add('hit');
+    setTimeout(()=>b.classList.remove('hit'), 260);
+    led.classList.add('on');
+    clearTimeout(ledTimer); ledTimer=setTimeout(()=>led.classList.remove('on'), 350);
+  }
+
+  function barAt(x){
+    const r = plate.getBoundingClientRect();
+    return Math.max(0, Math.min(11, Math.floor((x-r.left)/r.width*12)));
+  }
+  function sweepTo(i, vel){
+    if(lastBar<0){ pluck(i,vel); lastBar=i; return; }
+    const dir = i>lastBar?1:-1;
+    for(let j=lastBar+dir; dir>0? j<=i : j>=i; j+=dir) pluck(j, vel);
+    lastBar = i;
+  }
+  plate.addEventListener('pointerdown', e=>{
+    plate.setPointerCapture(e.pointerId);
+    lastBar = -1; sweepTo(barAt(e.clientX), .7);
+  });
+  plate.addEventListener('pointermove', e=>{
+    if(e.buttons===0 && e.pointerType!=='touch') return;
+    if(lastBar<0) return;
+    const i = barAt(e.clientX);
+    if(i!==lastBar) sweepTo(i, .85);
+  });
+  plate.addEventListener('pointerup', ()=>{ lastBar=-1; });
+  plate.addEventListener('pointercancel', ()=>{ lastBar=-1; });
+})();
+</script>
+</body>
+</html>
